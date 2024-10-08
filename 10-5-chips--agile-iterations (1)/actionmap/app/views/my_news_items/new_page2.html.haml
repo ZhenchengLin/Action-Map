@@ -1,0 +1,35 @@
+.container
+    %h2 Edit News Item
+
+    %p
+        %strong Representative:
+        = link_to @representative.name, representative_path(@representative)
+
+    %p
+        %strong Issue:
+        = @issue_list[params[:issue_id].to_i]
+
+    %h3 Select an article:
+
+    = form_with url: representative_new_article_representative_my_news_item_path(@representative), method: :post do
+        - @articles.each do |article|
+            .article-option
+                %label
+                    = radio_button_tag 'selected_article', article[:title]
+                    %strong Title:
+                    = article[:title]
+                    %br
+                    %strong Link:
+                    = link_to article[:url], article[:url], target: '_blank', rel: 'noopener'
+                    %br
+                    %strong Description:
+                    = article[:description]
+                    %br
+
+        %p
+            %strong Rating:
+            = select_tag 'rating', options_for_select((1..5).map { |i| [i, i] })
+
+        = hidden_field_tag :issue, @issue
+        = submit_tag 'Save', class: 'btn btn-primary'
+        = link_to 'View News Articles', representative_news_items_path(@representative), class: 'btn btn-info'

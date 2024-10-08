@@ -1,0 +1,28 @@
+.container-fluid
+    .row
+        .col-md-8.offset-md-2
+            %h1= @representative.name
+
+            - if @representative.photo_url.present?
+                %p
+                    %strong Photo:
+                    %br/
+                    %img.img-fluid{ src: @representative.photo_url, alt: "#{@representative.name}'s photo" }
+
+            %p
+                %strong Title:
+                = @representative.title
+
+            %p
+                %strong OCD ID:
+                = @representative.ocdid
+
+            %p
+                %strong Political Party:
+                = @representative.political_party
+
+            %p
+                %strong Contact Address:
+                = @representative.contact_address
+
+            = link_to 'Back', representatives_path

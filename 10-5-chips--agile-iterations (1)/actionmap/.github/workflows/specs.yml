@@ -1,0 +1,41 @@
+name: All Specs
+on:
+  - push
+  - pull_request
+  - workflow_dispatch
+
+jobs:
+  # TODO: Environment variables?
+  build:
+    runs-on: '${{ matrix.os }}'
+    strategy:
+      matrix:
+        os:
+          - ubuntu-22.04
+    steps:
+      - name: Cache multiple paths
+        uses: actions/cache@v2
+        with:
+          path: |-
+            node_modules
+            vendor/bundle
+          key: '${{ runner.os }}-${{ hashFiles(''TODO'') }}'
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 13.14.0
+      - uses: ruby/setup-ruby@v1
+        with:
+          bundler-cache: true # runs 'bundle install' and caches installed gems automatically
+      - name: Set up RAILS_MASTER_KEY
+        run: echo "RAILS_MASTER_KEY=${{ secrets.RAILS_MASTER_KEY }}" >> $GITHUB_ENV
+      - name: Set up CODECOV_TOKEN
+        run: echo "CODECOV_TOKEN=${{ secrets.CODECOV_TOKEN }}" >> $GITHUB_ENV
+      - run: gem install bundler:2.1.4
+      - run: npm install -g yarn@1.19.1
+      - run: bundle install
+      - run: yarn install
+      - run: bundle exec rake db:setup
+      - run: bundle exec rake db:test:prepare
+      - run: bundle exec rspec
+      - run: CUCUMBER_PUBLISH_QUIET=true bundle exec cucumber
